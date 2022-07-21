@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+    gbads_dash:
+        build: ./PPS_dash
+        restart: "always"
+        ports:
+            - "3000:3000"
+        networks: 
+            - gbads-app
+networks: 
+    gbads-app:
+        driver: bridge
+
+
+
