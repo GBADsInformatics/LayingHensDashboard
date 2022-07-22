@@ -56,8 +56,28 @@ page_1 = html.Div([
                     selected_style=selectedTabStyle,
                     children=[
                         html.Div(
-                            className="f-h-scroll-div",
-                            children=[],
+                            className='tab-section',
+                            children=[
+                                "Summary section"
+                            ]
+                        ),
+                        html.Div(
+                            className='tab-section-flex-container',
+                            children=[
+                                html.Div(
+                                    className='tab-section data-options',
+                                    children=[
+
+                                    ]
+                                ),
+                                html.Div(
+                                    className='tab-section data-section',
+                                    children=[
+
+                                    ]
+                                ),
+
+                            ]
                         ),
                     ],  
                 ),
@@ -66,13 +86,9 @@ page_1 = html.Div([
                     className='cattabs', 
                     selected_style=selectedTabStyle,
                     children=[
-                        html.Div(
-                            className="f-h-scroll-div",
-                            children=[],
-                        ),
                     ],  
                 ),
             ]),
-        ], className="r tab-panel"),
+        ], className="tab-panel"),
     ],className='mid'),
 ], className="main-div")
