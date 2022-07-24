@@ -24,6 +24,15 @@ from dash.dependencies import Input, Output, State
 import json
 from textwrap import dedent
 
+# Importing dataset
+LH_df = pd.read_csv('datasets/laying_hens.csv')
+
+# Getting dropdown options
+LH_countries = sorted(LH_df['Country'].unique())
+LH_years = sorted(LH_df['Year'].unique())
+LH_prodsys = ['Not enriched cage','Enriched cage','Free range','Barn','Organic']
+
+
 # Chloropleth map country data
 # from urllib.request import urlopen
 # plotly_countries = {}
@@ -149,4 +158,57 @@ def init_callbacks(dash_app):
             layout = "404"
         return layout
 
- 
+
+    ##################################
+    # Laying Hens Specific Callbacks #
+    ##################################
+
+    # Update stored options
+    @dash_app.callback(
+        Output('stored-options', 'data'),
+        [State('tabs', 'value')],
+        Input('options-dropdown-1-a', 'value'),
+        Input('options-dropdown-1-b', 'value'),
+        Input('options-dropdown-2-a', 'value'),
+        Input('options-dropdown-2-b', 'value'),
+        Input('options-dropdown-3-a', 'value'),
+        Input('options-dropdown-3-b', 'value'),
+    )
+    def update_stored_options_a(tab, drop1a, drop1b, drop2a, drop2b, drop3a, drop3b):
+        if tab == 'tab-2':
+            return {'options-dropdown-1':drop1b,'options-dropdown-2':drop2b,'options-dropdown-3':drop3b}
+        else:
+            return {'options-dropdown-1':drop1a,'options-dropdown-2':drop2a,'options-dropdown-3':drop3a}
+
+
+    # Update options values on changing tab
+    @dash_app.callback(
+        Output('options-dropdown-1-a', 'value'),
+        Output('options-dropdown-1-b', 'value'),
+        Output('options-dropdown-2-a', 'value'),
+        Output('options-dropdown-2-b', 'value'),
+        Output('options-dropdown-3-a', 'value'),
+        Output('options-dropdown-3-b', 'value'),
+        [Input('tabs', 'value')],
+        State('stored-options', 'data'),
+    )
+    def options_on_tab_change(selected_tab,stored_options):
+        if stored_options is None:
+            return None, None, None, None, None, None
+        return stored_options['options-dropdown-1'],stored_options['options-dropdown-1'],\
+            stored_options['options-dropdown-2'],stored_options['options-dropdown-2'],\
+            stored_options['options-dropdown-3'],stored_options['options-dropdown-3']
+    # Update available options in dropdowns
+    @dash_app.callback(
+        Output('options-dropdown-1-a', 'options'),
+        Output('options-dropdown-1-b', 'options'),
+        Output('options-dropdown-2-a', 'options'),
+        Output('options-dropdown-2-b', 'options'),
+        Output('options-dropdown-3-a', 'options'),
+        Output('options-dropdown-3-b', 'options'),
+        Input('dummy_div', 'children'),
+    )
+    def dropdown_options(_a):
+        return LH_countries,LH_countries,\
+            LH_prodsys,LH_prodsys,\
+            LH_years,LH_years

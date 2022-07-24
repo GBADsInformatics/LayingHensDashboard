@@ -16,6 +16,7 @@ import pandas as pd
 import numpy as np
 import json
 import plotly.express as px
+from flask_app.plotlydash.LHdata import *
 # from dash_extensions.enrich import FileSystemStore
 
 #  IMAGES
@@ -67,6 +68,33 @@ page_1 = html.Div([
                                 html.Div(
                                     className='tab-section data-options',
                                     children=[
+                                        html.Div(
+                                            id='options-container',
+                                            children=[
+                                                html.H4("Options",style={"text-align":"center"}),
+                                                html.Hr(),
+                                                html.H5("Graph Type",style={"margin":"0.4rem 0 0.2rem 0"}),
+                                                dcc.Dropdown(
+                                                    id='options-graph-type',
+                                                    clearable=False,
+                                                ),
+                                                html.H5("Country",style={"margin":"0.4rem 0 0.2rem 0"}),
+                                                dcc.Dropdown(
+                                                    id='options-dropdown-1-a',
+                                                    clearable=False,
+                                                ),
+                                                html.H5("Production System",style={"margin":"0.4rem 0 0.2rem 0"}),
+                                                dcc.Dropdown(
+                                                    id='options-dropdown-2-a',
+                                                    clearable=False,
+                                                ),
+                                                html.H5("Year",style={"margin":"0.4rem 0 0.2rem 0"}),
+                                                dcc.Dropdown(
+                                                    id='options-dropdown-3-a',
+                                                    clearable=False,
+                                                ),
+                                            ]
+                                        ),
 
                                     ]
                                 ),
@@ -82,13 +110,64 @@ page_1 = html.Div([
                     ],  
                 ),
                 dcc.Tab(
-                    label='Metadata', 
+                    label='Data table', 
                     className='cattabs', 
                     selected_style=selectedTabStyle,
                     children=[
+                        html.Div(
+                            className='tab-section',
+                            children=[
+                                "Summary section"
+                            ]
+                        ),
+                        html.Div(
+                            className='tab-section-flex-container',
+                            children=[
+                                html.Div(
+                                    className='tab-section data-options',
+                                    children=[
+                                        html.Div(
+                                            id='options-container',
+                                            children=[
+                                                html.H4("Options",style={"text-align":"center"}),
+                                                html.Hr(),
+                                                html.H5("Country",style={"margin":"0.4rem 0 0.2rem 0"}),
+                                                dcc.Dropdown(
+                                                    id='options-dropdown-1-b',
+                                                    clearable=False,
+                                                ),
+                                                html.H5("Production System",style={"margin":"0.4rem 0 0.2rem 0"}),
+                                                dcc.Dropdown(
+                                                    id='options-dropdown-2-b',
+                                                    clearable=False,
+                                                ),
+                                                html.H5("Year",style={"margin":"0.4rem 0 0.2rem 0"}),
+                                                dcc.Dropdown(
+                                                    id='options-dropdown-3-b',
+                                                    clearable=False,
+                                                ),
+                                            ]
+                                        ),
+
+                                    ]
+                                ),
+                                html.Div(
+                                    className='tab-section data-section',
+                                    children=[
+
+                                    ]
+                                ),
+
+                            ]
+                        ),
                     ],  
                 ),
             ]),
         ], className="tab-panel"),
+        html.Div(id='dummy_div',style={'display':'none'}),
     ],className='mid'),
+
+    # Storing data in the session. Data gets deleted once tab is closed
+    dcc.Store(id='stored-options', storage_type='memory', data=None),
+
 ], className="main-div")
