@@ -31,6 +31,15 @@ LH_df = pd.read_csv('datasets/laying_hens.csv')
 LH_countries = sorted(LH_df['Country'].unique())
 LH_years = sorted(LH_df['Year'].unique())
 LH_prodsys = ['Not enriched cage','Enriched cage','Free range','Barn','Organic']
+LH_graph_types = ['Line Graph']
+
+
+def filterdf(code, column, df):
+    if code is None or len(code) == 0:
+        return df
+    if isinstance(code,list):
+        return df[df[column].isin(code)]
+    return df[df[column]==code]
 
 
 # Chloropleth map country data
@@ -105,6 +114,7 @@ def getUserContent():
     print(userEmail)
     return userEmail
 
+
 ##CALLBACKS -------------------------------------------------------------------------------------------------------------------------------------------------------------
 def init_callbacks(dash_app):
     
@@ -171,14 +181,12 @@ def init_callbacks(dash_app):
         Input('options-dropdown-1-b', 'value'),
         Input('options-dropdown-2-a', 'value'),
         Input('options-dropdown-2-b', 'value'),
-        Input('options-dropdown-3-a', 'value'),
-        Input('options-dropdown-3-b', 'value'),
     )
-    def update_stored_options_a(tab, drop1a, drop1b, drop2a, drop2b, drop3a, drop3b):
+    def update_stored_options_a(tab, drop1a, drop1b, drop2a, drop2b):
         if tab == 'tab-2':
-            return {'options-dropdown-1':drop1b,'options-dropdown-2':drop2b,'options-dropdown-3':drop3b}
+            return {'options-dropdown-1':drop1b,'options-dropdown-2':drop2b}
         else:
-            return {'options-dropdown-1':drop1a,'options-dropdown-2':drop2a,'options-dropdown-3':drop3a}
+            return {'options-dropdown-1':drop1a,'options-dropdown-2':drop2a}
 
 
     # Update options values on changing tab
@@ -187,28 +195,140 @@ def init_callbacks(dash_app):
         Output('options-dropdown-1-b', 'value'),
         Output('options-dropdown-2-a', 'value'),
         Output('options-dropdown-2-b', 'value'),
-        Output('options-dropdown-3-a', 'value'),
-        Output('options-dropdown-3-b', 'value'),
         [Input('tabs', 'value')],
         State('stored-options', 'data'),
     )
     def options_on_tab_change(selected_tab,stored_options):
         if stored_options is None:
-            return None, None, None, None, None, None
+            return LH_countries[0], LH_countries[0], None, None
         return stored_options['options-dropdown-1'],stored_options['options-dropdown-1'],\
-            stored_options['options-dropdown-2'],stored_options['options-dropdown-2'],\
-            stored_options['options-dropdown-3'],stored_options['options-dropdown-3']
-    # Update available options in dropdowns
+            stored_options['options-dropdown-2'],stored_options['options-dropdown-2']
+
+
+    # Init dropdowns
     @dash_app.callback(
         Output('options-dropdown-1-a', 'options'),
         Output('options-dropdown-1-b', 'options'),
         Output('options-dropdown-2-a', 'options'),
         Output('options-dropdown-2-b', 'options'),
-        Output('options-dropdown-3-a', 'options'),
-        Output('options-dropdown-3-b', 'options'),
+        Output('options-graph-type', 'options'),
+        Output('options-graph-type', 'value'),
+        Output('options-dropdown-3-b', 'min'),
+        Output('options-dropdown-3-b', 'max'),
+        Output('options-dropdown-3-b', 'value'),
         Input('dummy_div', 'children'),
     )
     def dropdown_options(_a):
         return LH_countries,LH_countries,\
             LH_prodsys,LH_prodsys,\
-            LH_years,LH_years
+            LH_graph_types, LH_graph_types[0],\
+            LH_years[0], LH_years[-1], [LH_years[0], LH_years[-1]]
+
+
+    # Update year dropdown depending on graph type
+    @dash_app.callback(
+        Output('year-container', 'children'),
+        Input('dummy_div', 'children'),
+        Input('options-graph-type', 'value'),
+    )
+    def create_year_slider(_d, gtype):
+        children = [html.H5("Year",style={"margin":"0.4rem 0 0.2rem 0"}),]
+        children.append(
+            html.Div(
+                className='year-slider-container',
+                children=[
+                    dcc.RangeSlider(LH_years[0], LH_years[-1], 1, marks=None,
+                        value=[LH_years[0], LH_years[-1]],
+                        id='options-dropdown-3-a',
+                        className='year-slider',
+                        tooltip={"placement": "top", "always_visible": True},
+                        dots=True,
+                    )
+                ]
+            )
+        )
+        return children
+
+    # Displaying graph
+    @dash_app.callback(
+        Output('graph-section', 'children'),
+        Input('options-graph-type', 'value'),
+        Input('options-dropdown-1-a', 'value'),
+        Input('options-dropdown-2-a', 'value'),
+        Input('options-dropdown-3-a', 'value'),
+    )
+    def create_graph(gtype, country, prodsys, year):
+        
+        if prodsys is None:
+            prodsys = LH_prodsys
+
+        df = filterdf(country,'Country',LH_df)
+        df = df[['Country','Year']+prodsys]
+        
+        year_list = []
+        y_value = year[0]
+        y_max = year[-1]
+        while y_value <= y_max:
+            year_list.append(y_value)
+            y_value += 1
+        df = filterdf(year_list,'Year',df)
+
+    
+        # Creating graph
+        fig_title = 'Title'
+        # fig_title = \
+        #     f'Economic Value of '+\
+        #     f'{species_value if species_value != None else "Animal"} '+\
+        #     f'{"" if asset_type == None or asset_type == "Crops" else asset_type + " "}'+\
+        #     f'{"in All Countries" if country is None or len(country) == 0 else "in " + ",".join(new_df["Country"].unique())}'+\
+        #     ' (2014-2016 Constant USD $)'
+
+        fig = px.line(
+            df, 
+            x='Year',
+            y=prodsys,
+            title=fig_title,
+        )
+        fig.update_layout(
+            margin={"r":10,"t":45,"l":10,"b":10},
+            font=dict(
+                size=16,
+            )
+        )
+        fig.layout.autosize = True
+        figure = dcc.Graph(id="main-graph", figure=fig)
+        return figure
+
+    # Updating Datatable
+    @dash_app.callback(
+        Output('data-table-container','children'),
+        Input('options-dropdown-1-b', 'value'),
+        Input('options-dropdown-2-b', 'value'),
+        Input('options-dropdown-3-b', 'value'),
+    )
+    def render_table(country,prodsys,year):
+        
+        if prodsys is None:
+            prodsys = LH_prodsys
+
+        df = filterdf(country,'Country',LH_df)
+        df = df[['Country','Year']+prodsys]
+        
+        year_list = []
+        y_value = year[0]
+        y_max = year[-1]
+        while y_value <= y_max:
+            year_list.append(y_value)
+            y_value += 1
+        df = filterdf(year_list,'Year',df)
+
+
+        # Rendering the world plot
+        cols = [{"name": i, "id": i,"hideable":True} for i in df.columns]
+        cols[0] = {"name": "ID", "id": cols[0]["id"],"hideable":True}
+        datatable = dash_table.DataTable(
+            data=df.to_dict('records'),
+            columns=cols,
+            export_format="csv",
+        )
+        return datatable

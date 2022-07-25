@@ -16,7 +16,6 @@ import pandas as pd
 import numpy as np
 import json
 import plotly.express as px
-from flask_app.plotlydash.LHdata import *
 # from dash_extensions.enrich import FileSystemStore
 
 #  IMAGES
@@ -82,16 +81,17 @@ page_1 = html.Div([
                                                 dcc.Dropdown(
                                                     id='options-dropdown-1-a',
                                                     clearable=False,
+                                                    multi=True,
                                                 ),
                                                 html.H5("Production System",style={"margin":"0.4rem 0 0.2rem 0"}),
                                                 dcc.Dropdown(
                                                     id='options-dropdown-2-a',
                                                     clearable=False,
+                                                    multi=True,
                                                 ),
-                                                html.H5("Year",style={"margin":"0.4rem 0 0.2rem 0"}),
-                                                dcc.Dropdown(
-                                                    id='options-dropdown-3-a',
-                                                    clearable=False,
+                                                html.Div(
+                                                    id='year-container',
+                                                    children=[],
                                                 ),
                                             ]
                                         ),
@@ -99,6 +99,7 @@ page_1 = html.Div([
                                     ]
                                 ),
                                 html.Div(
+                                    id='graph-section',
                                     className='tab-section data-section',
                                     children=[
 
@@ -135,16 +136,32 @@ page_1 = html.Div([
                                                 dcc.Dropdown(
                                                     id='options-dropdown-1-b',
                                                     clearable=False,
+                                                    multi=True,
                                                 ),
                                                 html.H5("Production System",style={"margin":"0.4rem 0 0.2rem 0"}),
                                                 dcc.Dropdown(
                                                     id='options-dropdown-2-b',
                                                     clearable=False,
+                                                    multi=True,
                                                 ),
-                                                html.H5("Year",style={"margin":"0.4rem 0 0.2rem 0"}),
-                                                dcc.Dropdown(
-                                                    id='options-dropdown-3-b',
-                                                    clearable=False,
+                                                html.Div(
+                                                    id='year-container-b',
+                                                    children=[
+                                                        html.H5("Year",style={"margin":"0.4rem 0 0.2rem 0"}),
+                                                        html.Div(
+                                                            className='year-slider-container',
+                                                            children=[
+                                                                dcc.RangeSlider(
+                                                                    step=1, 
+                                                                    marks=None,
+                                                                    id='options-dropdown-3-b',
+                                                                    className='year-slider',
+                                                                    tooltip={"placement": "top", "always_visible": True},
+                                                                    dots=True,
+                                                                )
+                                                            ]
+                                                        ),
+                                                    ],
                                                 ),
                                             ]
                                         ),
@@ -152,9 +169,16 @@ page_1 = html.Div([
                                     ]
                                 ),
                                 html.Div(
+                                    id='data-table-section',
                                     className='tab-section data-section',
                                     children=[
-
+                                        html.Div(
+                                            id='data-table-container',
+                                            className='data-table-container',
+                                            children=[
+                                                
+                                            ]
+                                        ),
                                     ]
                                 ),
 

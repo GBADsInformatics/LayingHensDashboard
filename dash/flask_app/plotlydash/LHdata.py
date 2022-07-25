@@ -1,1 +1,0 @@
-LH_GRAPH_TYPES = 'Line Graph'
