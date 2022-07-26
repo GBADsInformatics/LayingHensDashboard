@@ -83,11 +83,16 @@ page_1 = html.Div([
                                                     clearable=False,
                                                     multi=True,
                                                 ),
-                                                html.H5("Production System",style={"margin":"0.4rem 0 0.2rem 0"}),
-                                                dcc.Dropdown(
-                                                    id='options-dropdown-2-a',
-                                                    clearable=False,
-                                                    multi=True,
+                                                html.Div(
+                                                    id='prodsys-container',
+                                                    children=[
+                                                        html.H5("Production System",style={"margin":"0.4rem 0 0.2rem 0"}),
+                                                        dcc.Dropdown(
+                                                            id='options-dropdown-2-a',
+                                                            clearable=False,
+                                                            multi=True,
+                                                        ),
+                                                    ],
                                                 ),
                                                 html.Div(
                                                     id='year-container',

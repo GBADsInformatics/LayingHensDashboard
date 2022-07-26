@@ -1,5 +1,6 @@
 import json
 from logging import disable
+from operator import gt
 from os.path import exists
 import requests
 import numpy as np
@@ -14,6 +15,7 @@ from datetime import date, datetime
 from functools import wraps
 from flask import session, redirect
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import smtplib
 from email.message import EmailMessage
 from email.mime.text import MIMEText
@@ -31,13 +33,15 @@ LH_df = pd.read_csv('datasets/laying_hens.csv')
 LH_countries = sorted(LH_df['Country'].unique())
 LH_years = sorted(LH_df['Year'].unique())
 LH_prodsys = ['Not enriched cage','Enriched cage','Free range','Barn','Organic']
-LH_graph_types = ['Line Graph']
+LH_graph_types = ['Line Graph','Pie Chart Comparison']
 
 
 def filterdf(code, column, df):
-    if code is None or len(code) == 0:
+    if code is None:
         return df
     if isinstance(code,list):
+        if len(code) == 0:
+            return df
         return df[df[column].isin(code)]
     return df[df[column]==code]
 
@@ -225,29 +229,49 @@ def init_callbacks(dash_app):
             LH_years[0], LH_years[-1], [LH_years[0], LH_years[-1]]
 
 
-    # Update year dropdown depending on graph type
+    # Update dropdowns depending on graph type
     @dash_app.callback(
+        Output('prodsys-container', 'style'),
         Output('year-container', 'children'),
         Input('dummy_div', 'children'),
         Input('options-graph-type', 'value'),
     )
     def create_year_slider(_d, gtype):
-        children = [html.H5("Year",style={"margin":"0.4rem 0 0.2rem 0"}),]
-        children.append(
-            html.Div(
-                className='year-slider-container',
-                children=[
-                    dcc.RangeSlider(LH_years[0], LH_years[-1], 1, marks=None,
-                        value=[LH_years[0], LH_years[-1]],
-                        id='options-dropdown-3-a',
-                        className='year-slider',
-                        tooltip={"placement": "top", "always_visible": True},
-                        dots=True,
-                    )
-                ]
+
+        if gtype == 'Line Graph':
+            children = [html.H5("Year",style={"margin":"0.4rem 0 0.2rem 0"}),]
+            children.append(
+                html.Div(
+                    className='year-slider-container',
+                    children=[
+                        dcc.RangeSlider(LH_years[0], LH_years[-1], 1, marks=None,
+                            value=[LH_years[0], LH_years[-1]],
+                            id='options-dropdown-3-a',
+                            className='year-slider',
+                            tooltip={"placement": "top", "always_visible": True},
+                            dots=True,
+                        )
+                    ]
+                )
             )
-        )
-        return children
+            return {'display':'block'},children
+        if gtype == 'Pie Chart Comparison':
+            children = [html.H5("Year",style={"margin":"0.4rem 0 0.2rem 0"}),]
+            children.append(
+                html.Div(
+                    className='year-slider-container',
+                    children=[
+                        dcc.RangeSlider(LH_years[0], LH_years[-1], 1, marks=None,
+                            value=[LH_years[0], LH_years[-1]],
+                            id='options-dropdown-3-a',
+                            className='year-slider',
+                            tooltip={"placement": "top", "always_visible": True},
+                            dots=True,
+                        )
+                    ]
+                )
+            )
+            return {'display':'none'},children
 
     # Displaying graph
     @dash_app.callback(
@@ -259,45 +283,81 @@ def init_callbacks(dash_app):
     )
     def create_graph(gtype, country, prodsys, year):
         
-        if prodsys is None or prodsys == []:
-            prodsys = LH_prodsys
+        if gtype == 'Line Graph':
+            if prodsys is None or prodsys == []:
+                prodsys = LH_prodsys
 
-        df = filterdf(country,'Country',LH_df)
-        df = df[['Country','Year']+prodsys]
+            df = filterdf(country,'Country',LH_df)
+            df = df[['Country','Year']+prodsys]
+            
+            year_list = []
+            y_value = year[0]
+            y_max = year[-1]
+            while y_value <= y_max:
+                year_list.append(y_value)
+                y_value += 1
+            df = filterdf(year_list,'Year',df)
+
         
-        year_list = []
-        y_value = year[0]
-        y_max = year[-1]
-        while y_value <= y_max:
-            year_list.append(y_value)
-            y_value += 1
-        df = filterdf(year_list,'Year',df)
+            # Creating graph
+            fig_title = 'Title'
+            # fig_title = \
+            #     f'Economic Value of '+\
+            #     f'{species_value if species_value != None else "Animal"} '+\
+            #     f'{"" if asset_type == None or asset_type == "Crops" else asset_type + " "}'+\
+            #     f'{"in All Countries" if country is None or len(country) == 0 else "in " + ",".join(new_df["Country"].unique())}'+\
+            #     ' (2014-2016 Constant USD $)'
 
-    
-        # Creating graph
-        fig_title = 'Title'
-        # fig_title = \
-        #     f'Economic Value of '+\
-        #     f'{species_value if species_value != None else "Animal"} '+\
-        #     f'{"" if asset_type == None or asset_type == "Crops" else asset_type + " "}'+\
-        #     f'{"in All Countries" if country is None or len(country) == 0 else "in " + ",".join(new_df["Country"].unique())}'+\
-        #     ' (2014-2016 Constant USD $)'
-
-        fig = px.line(
-            df, 
-            x='Year',
-            y=prodsys,
-            title=fig_title,
-        )
-        fig.update_layout(
-            margin={"r":10,"t":45,"l":10,"b":10},
-            font=dict(
-                size=16,
+            fig = px.line(
+                df, 
+                x='Year',
+                y=prodsys,
+                title=fig_title,
             )
-        )
-        fig.layout.autosize = True
-        figure = dcc.Graph(id="main-graph", figure=fig)
-        return figure
+            fig.update_layout(
+                margin={"r":10,"t":45,"l":10,"b":10},
+                font=dict(
+                    size=16,
+                )
+            )
+            fig.layout.autosize = True
+            figure = dcc.Graph(id="main-graph", figure=fig)
+            return figure
+
+        elif gtype == 'Pie Chart Comparison':
+            labels = LH_prodsys
+
+            # Create subplots, using 'domain' type for pie charts
+            specs = [[{'type':'domain'}, {'type':'domain'}], [{'type':'domain'}, {'type':'domain'}]]
+            fig = make_subplots(rows=2, cols=2, specs=specs)
+
+            # Define pie charts
+            df = filterdf(country[0],'Country',LH_df)
+            df = filterdf(year[0],'Year',df)
+            fig.add_trace(go.Pie(labels=labels, values=df.values.tolist()[0][2:-1], name='Starry Night'), 1, 1)
+            df = filterdf(country[1],'Country',LH_df)
+            df = filterdf(year[0],'Year',df)
+            fig.add_trace(go.Pie(labels=labels, values=df.values.tolist()[0][2:-1], name='Sunflowers'), 1, 2)
+            df = filterdf(country[0],'Country',LH_df)
+            df = filterdf(year[1],'Year',df)
+            fig.add_trace(go.Pie(labels=labels, values=df.values.tolist()[0][2:-1], name='Irises'), 2, 1)
+            df = filterdf(country[1],'Country',LH_df)
+            df = filterdf(year[1],'Year',df)
+            fig.add_trace(go.Pie(labels=labels, values=df.values.tolist()[0][2:-1], name='The Night Café'), 2, 2)
+
+            print(df.values.tolist()[0][2:-1])
+
+            # Tune layout and hover info
+            # fig.update_traces(hoverinfo='label+percent+name', textinfo='none')
+            # fig.update(layout_title_text='Van Gogh: 5 Most Prominent Colors Shown Proportionally',
+                    # layout_showlegend=False)
+
+            fig = go.Figure(fig)
+            fig.layout.autosize = True
+            figure = dcc.Graph(id="main-graph", figure=fig)
+            return figure
+
+
 
     # Updating Datatable
     @dash_app.callback(
