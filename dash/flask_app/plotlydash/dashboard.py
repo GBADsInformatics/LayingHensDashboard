@@ -259,7 +259,7 @@ def init_callbacks(dash_app):
     )
     def create_graph(gtype, country, prodsys, year):
         
-        if prodsys is None:
+        if prodsys is None or prodsys == []:
             prodsys = LH_prodsys
 
         df = filterdf(country,'Country',LH_df)
@@ -308,7 +308,7 @@ def init_callbacks(dash_app):
     )
     def render_table(country,prodsys,year):
         
-        if prodsys is None:
+        if prodsys is None or prodsys == []:
             prodsys = LH_prodsys
 
         df = filterdf(country,'Country',LH_df)
