@@ -33,8 +33,10 @@ LH_df = pd.read_csv('datasets/laying_hens.csv')
 LH_countries = sorted(LH_df['Country'].unique())
 LH_years = sorted(LH_df['Year'].unique())
 LH_prodsys = ['Not enriched cage','Enriched cage','Free range','Barn','Organic']
-LH_graph_types = ['Line Chart','Pie Chart Comparison', 'Grouped Bar Chart']
+LH_graph_types = ['Line Chart','Pie Chart Comparison', 'Stacked Bar Chart']
 
+# Changing to percentage/100
+LH_df[LH_prodsys] *= 100
 
 def filterdf(code, column, df):
     if code is None:
@@ -238,7 +240,7 @@ def init_callbacks(dash_app):
     )
     def create_year_slider(_d, gtype):
 
-        if gtype == 'Line Chart' or gtype == 'Grouped Bar Chart':
+        if gtype == 'Line Chart' or gtype == 'Stacked Bar Chart':
             children = [html.H5("Year",style={"margin":"0.4rem 0 0.2rem 0"}),]
             children.append(
                 html.Div(
@@ -359,7 +361,7 @@ def init_callbacks(dash_app):
 
             fig = go.Figure(fig)
 
-        elif gtype == 'Grouped Bar Chart':
+        elif gtype == 'Stacked Bar Chart':
             if prodsys is None or prodsys == []:
                 prodsys = LH_prodsys
 
@@ -386,7 +388,7 @@ def init_callbacks(dash_app):
                 x='Year',
                 y=prodsys,
                 title=fig_title,
-                barmode='group',
+                # barmode='group',
             )
         
         fig.update_layout(
