@@ -33,7 +33,7 @@ LH_df = pd.read_csv('datasets/laying_hens.csv')
 LH_countries = sorted(LH_df['Country'].unique())
 LH_years = sorted(LH_df['Year'].unique())
 LH_prodsys = ['Not enriched cage','Enriched cage','Free range','Barn','Organic']
-LH_graph_types = ['Line Graph','Pie Chart Comparison']
+LH_graph_types = ['Line Chart','Pie Chart Comparison', 'Grouped Bar Chart']
 
 
 def filterdf(code, column, df):
@@ -238,7 +238,7 @@ def init_callbacks(dash_app):
     )
     def create_year_slider(_d, gtype):
 
-        if gtype == 'Line Graph':
+        if gtype == 'Line Chart' or gtype == 'Grouped Bar Chart':
             children = [html.H5("Year",style={"margin":"0.4rem 0 0.2rem 0"}),]
             children.append(
                 html.Div(
@@ -283,7 +283,7 @@ def init_callbacks(dash_app):
     )
     def create_graph(gtype, country, prodsys, year):
         
-        if gtype == 'Line Graph':
+        if gtype == 'Line Chart':
             if prodsys is None or prodsys == []:
                 prodsys = LH_prodsys
 
@@ -353,6 +353,48 @@ def init_callbacks(dash_app):
                     # layout_showlegend=False)
 
             fig = go.Figure(fig)
+            fig.layout.autosize = True
+            figure = dcc.Graph(id="main-graph", figure=fig)
+            return figure
+
+        elif gtype == 'Grouped Bar Chart':
+            if prodsys is None or prodsys == []:
+                prodsys = LH_prodsys
+
+            df = filterdf(country,'Country',LH_df)
+            df = df[['Country','Year']+prodsys]
+            
+            year_list = []
+            y_value = year[0]
+            y_max = year[-1]
+            while y_value <= y_max:
+                year_list.append(y_value)
+                y_value += 1
+            df = filterdf(year_list,'Year',df)
+
+        
+            # Creating graph
+            fig_title = 'Title'
+            # fig_title = \
+            #     f'Economic Value of '+\
+            #     f'{species_value if species_value != None else "Animal"} '+\
+            #     f'{"" if asset_type == None or asset_type == "Crops" else asset_type + " "}'+\
+            #     f'{"in All Countries" if country is None or len(country) == 0 else "in " + ",".join(new_df["Country"].unique())}'+\
+            #     ' (2014-2016 Constant USD $)'
+
+            fig = px.bar(
+                df, 
+                x='Year',
+                y=prodsys,
+                title=fig_title,
+                barmode='group',
+            )
+            fig.update_layout(
+                margin={"r":10,"t":45,"l":10,"b":10},
+                font=dict(
+                    size=16,
+                )
+            )
             fig.layout.autosize = True
             figure = dcc.Graph(id="main-graph", figure=fig)
             return figure
