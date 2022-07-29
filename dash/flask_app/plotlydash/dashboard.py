@@ -275,7 +275,7 @@ def init_callbacks(dash_app):
 
     # Displaying graph
     @dash_app.callback(
-        Output('graph-section', 'children'),
+        Output('graph-container', 'children'),
         Input('options-graph-type', 'value'),
         Input('options-dropdown-1-a', 'value'),
         Input('options-dropdown-2-a', 'value'),
@@ -283,6 +283,13 @@ def init_callbacks(dash_app):
     )
     def create_graph(gtype, country, prodsys, year):
         
+        fig = None
+    
+        color_by = 'variable'
+        if country is None or (isinstance(country,list) and (len(country) == 0 or len(country) > 1))  : color_by = 'Country'
+
+
+
         if gtype == 'Line Chart':
             if prodsys is None or prodsys == []:
                 prodsys = LH_prodsys
@@ -297,32 +304,22 @@ def init_callbacks(dash_app):
                 year_list.append(y_value)
                 y_value += 1
             df = filterdf(year_list,'Year',df)
+            
 
         
             # Creating graph
-            fig_title = 'Title'
-            # fig_title = \
-            #     f'Economic Value of '+\
-            #     f'{species_value if species_value != None else "Animal"} '+\
-            #     f'{"" if asset_type == None or asset_type == "Crops" else asset_type + " "}'+\
-            #     f'{"in All Countries" if country is None or len(country) == 0 else "in " + ",".join(new_df["Country"].unique())}'+\
-            #     ' (2014-2016 Constant USD $)'
+            fig_title = \
+                f'Percentage of Laying Hens by '+\
+                f'{"Production System" if color_by == "variable" else ",".join(prodsys)}'+ ' ' +\
+                f'{"in All Countries" if country is None or len(country) == 0 else "in " + ",".join(df["Country"].unique())}'
 
             fig = px.line(
                 df, 
                 x='Year',
                 y=prodsys,
+                color=color_by,
                 title=fig_title,
             )
-            fig.update_layout(
-                margin={"r":10,"t":45,"l":10,"b":10},
-                font=dict(
-                    size=16,
-                )
-            )
-            fig.layout.autosize = True
-            figure = dcc.Graph(id="main-graph", figure=fig)
-            return figure
 
         elif gtype == 'Pie Chart Comparison':
             labels = LH_prodsys
@@ -331,21 +328,29 @@ def init_callbacks(dash_app):
             specs = [[{'type':'domain'}, {'type':'domain'}], [{'type':'domain'}, {'type':'domain'}]]
             fig = make_subplots(rows=2, cols=2, specs=specs)
 
+            # Titles
+            fig_title = \
+                f'Comparison of Production Systems in '+\
+                f'{country[0]} and {country[1]} between {year[0]} and {year[1]}'
+            fig.update_layout(
+                title=fig_title,
+            )
+
+
             # Define pie charts
             df = filterdf(country[0],'Country',LH_df)
             df = filterdf(year[0],'Year',df)
-            fig.add_trace(go.Pie(labels=labels, values=df.values.tolist()[0][2:-1], name='Starry Night'), 1, 1)
+            fig.add_trace(go.Pie(title=country[0]+' - '+str(year[0]),labels=labels, values=df.values.tolist()[0][2:-1]), 1, 1)
             df = filterdf(country[1],'Country',LH_df)
             df = filterdf(year[0],'Year',df)
-            fig.add_trace(go.Pie(labels=labels, values=df.values.tolist()[0][2:-1], name='Sunflowers'), 1, 2)
+            fig.add_trace(go.Pie(title=country[1]+' - '+str(year[0]),labels=labels, values=df.values.tolist()[0][2:-1]), 1, 2)
             df = filterdf(country[0],'Country',LH_df)
             df = filterdf(year[1],'Year',df)
-            fig.add_trace(go.Pie(labels=labels, values=df.values.tolist()[0][2:-1], name='Irises'), 2, 1)
+            fig.add_trace(go.Pie(title=country[0]+' - '+str(year[1]),labels=labels, values=df.values.tolist()[0][2:-1]), 2, 1)
             df = filterdf(country[1],'Country',LH_df)
             df = filterdf(year[1],'Year',df)
-            fig.add_trace(go.Pie(labels=labels, values=df.values.tolist()[0][2:-1], name='The Night Café'), 2, 2)
+            fig.add_trace(go.Pie(title=country[1]+' - '+str(year[1]),labels=labels, values=df.values.tolist()[0][2:-1]), 2, 2)
 
-            print(df.values.tolist()[0][2:-1])
 
             # Tune layout and hover info
             # fig.update_traces(hoverinfo='label+percent+name', textinfo='none')
@@ -353,9 +358,6 @@ def init_callbacks(dash_app):
                     # layout_showlegend=False)
 
             fig = go.Figure(fig)
-            fig.layout.autosize = True
-            figure = dcc.Graph(id="main-graph", figure=fig)
-            return figure
 
         elif gtype == 'Grouped Bar Chart':
             if prodsys is None or prodsys == []:
@@ -374,13 +376,10 @@ def init_callbacks(dash_app):
 
         
             # Creating graph
-            fig_title = 'Title'
-            # fig_title = \
-            #     f'Economic Value of '+\
-            #     f'{species_value if species_value != None else "Animal"} '+\
-            #     f'{"" if asset_type == None or asset_type == "Crops" else asset_type + " "}'+\
-            #     f'{"in All Countries" if country is None or len(country) == 0 else "in " + ",".join(new_df["Country"].unique())}'+\
-            #     ' (2014-2016 Constant USD $)'
+            fig_title = \
+                f'Percentage of Laying Hens by '+\
+                f'{"Production System" if color_by == "variable" else ",".join(prodsys)}'+ ' ' +\
+                f'{"in All Countries" if country is None or len(country) == 0 else "in " + ",".join(df["Country"].unique())}'
 
             fig = px.bar(
                 df, 
@@ -389,15 +388,15 @@ def init_callbacks(dash_app):
                 title=fig_title,
                 barmode='group',
             )
-            fig.update_layout(
-                margin={"r":10,"t":45,"l":10,"b":10},
-                font=dict(
-                    size=16,
-                )
+        
+        fig.update_layout(
+            margin={"r":10,"t":45,"l":10,"b":10},
+            font=dict(
+                size=16,
             )
-            fig.layout.autosize = True
-            figure = dcc.Graph(id="main-graph", figure=fig)
-            return figure
+        )
+        fig.layout.autosize = True
+        return dcc.Graph(className='main-graph-size', id="main-graph", figure=fig)
 
 
 

@@ -107,7 +107,12 @@ page_1 = html.Div([
                                     id='graph-section',
                                     className='tab-section data-section',
                                     children=[
-
+                                        dcc.Loading(
+                                            id='graph-container',
+                                            type='cube',
+                                            parent_className='graph-container',
+                                            children=[html.P('Please select appropriate dropdown options.')]
+                                        ),
                                     ]
                                 ),
 
