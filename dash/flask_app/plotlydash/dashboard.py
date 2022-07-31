@@ -388,7 +388,7 @@ def init_callbacks(dash_app):
                 x='Year',
                 y=prodsys,
                 title=fig_title,
-                # barmode='group',
+                color=color_by,
             )
         
         fig.update_layout(
@@ -435,3 +435,31 @@ def init_callbacks(dash_app):
             export_format="csv",
         )
         return datatable
+
+
+    # Updating Datatable
+    @dash_app.callback(
+        Output('alert-container','children'),
+        Input('options-graph-type', 'value'),
+        Input('options-dropdown-1-a', 'value'),
+        Input('options-dropdown-2-a', 'value'),
+        Input('options-dropdown-3-a', 'value'),
+    )
+    def render_alert(gtype,country,prodsys,year):
+        amsg = None
+
+
+        if gtype == 'Line Chart':
+            if (country is None or (isinstance(country, list) and (len(country) > 1 or len(country) == 0))) and (prodsys is None or (isinstance(prodsys, list) and (len(prodsys) > 1 or len(prodsys) == 0))):
+                amsg = ['Please choose 1 production system when graphing multiple countries.','danger']
+        elif gtype == 'Pie Chart Comparison':
+            if country is None or (isinstance(country, list) and len(country) < 2):
+                amsg = ['You must select 2 countries when comparing pie charts.','danger']
+            elif country is None or (isinstance(country, list) and len(country) > 2):
+                amsg = ['Only the first 2 countries selected will be used for the pie charts.','warning']
+
+
+        if amsg is None: 
+            return None
+        else:
+            return dbc.Alert([html.H5('Warning'),amsg[0]], color=amsg[1])

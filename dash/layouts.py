@@ -98,6 +98,11 @@ page_1 = html.Div([
                                                     id='year-container',
                                                     children=[],
                                                 ),
+                                                html.Div(
+                                                    id='alert-container',
+                                                    children=[],
+                                                    style={'margin-top':'1rem'}
+                                                ),
                                             ]
                                         ),
 
