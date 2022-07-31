@@ -1,3 +1,4 @@
+from __future__ import annotations
 import json
 from logging import disable
 from operator import gt
@@ -321,6 +322,7 @@ def init_callbacks(dash_app):
                 y=prodsys,
                 color=color_by,
                 title=fig_title,
+                color_discrete_sequence=px.colors.qualitative.Dark24,
             )
 
         elif gtype == 'Pie Chart Comparison':
@@ -338,26 +340,48 @@ def init_callbacks(dash_app):
                 title=fig_title,
             )
 
+            annotations = []
 
             # Define pie charts
             df = filterdf(country[0],'Country',LH_df)
             df = filterdf(year[0],'Year',df)
-            fig.add_trace(go.Pie(title=country[0]+' - '+str(year[0]),labels=labels, values=df.values.tolist()[0][2:-1]), 1, 1)
+            chart = go.Pie(title=country[0]+' - '+str(year[0]),labels=labels, values=df.values.tolist()[0][2:-1])
+            if np.count_nonzero(~np.isnan(chart.values)) != 0:
+                fig.add_trace(chart, 1, 1)
+            else:
+                annotations.append(dict(text='No Data', x=0.18, y=0.8, font_size=20, showarrow=False))
+
             df = filterdf(country[1],'Country',LH_df)
             df = filterdf(year[0],'Year',df)
-            fig.add_trace(go.Pie(title=country[1]+' - '+str(year[0]),labels=labels, values=df.values.tolist()[0][2:-1]), 1, 2)
+            chart = go.Pie(title=country[1]+' - '+str(year[0]),labels=labels, values=df.values.tolist()[0][2:-1])
+            if np.count_nonzero(~np.isnan(chart.values)) != 0:
+                fig.add_trace(chart, 1, 2)
+            else:
+                annotations.append(dict(text='No Data', x=0.81, y=0.8, font_size=20, showarrow=False))
+
             df = filterdf(country[0],'Country',LH_df)
             df = filterdf(year[1],'Year',df)
-            fig.add_trace(go.Pie(title=country[0]+' - '+str(year[1]),labels=labels, values=df.values.tolist()[0][2:-1]), 2, 1)
+            chart = go.Pie(title=country[0]+' - '+str(year[1]),labels=labels, values=df.values.tolist()[0][2:-1])
+            if np.count_nonzero(~np.isnan(chart.values)) != 0:
+                fig.add_trace(chart, 2, 1)
+            else:
+                annotations.append(dict(text='No Data', x=0.18, y=0.18, font_size=20, showarrow=False))
+
             df = filterdf(country[1],'Country',LH_df)
             df = filterdf(year[1],'Year',df)
-            fig.add_trace(go.Pie(title=country[1]+' - '+str(year[1]),labels=labels, values=df.values.tolist()[0][2:-1]), 2, 2)
+            chart = go.Pie(title=country[1]+' - '+str(year[1]),labels=labels, values=df.values.tolist()[0][2:-1])
+            if np.count_nonzero(~np.isnan(chart.values)) != 0:
+                fig.add_trace(chart, 2, 2)
+            else:
+                annotations.append(dict(text='No Data', x=0.81, y=0.18, font_size=20, showarrow=False))
 
 
             # Tune layout and hover info
             # fig.update_traces(hoverinfo='label+percent+name', textinfo='none')
             # fig.update(layout_title_text='Van Gogh: 5 Most Prominent Colors Shown Proportionally',
                     # layout_showlegend=False)
+            fig.update_layout(annotations=annotations,)
+            fig.update_annotations(align='center',)
 
             fig = go.Figure(fig)
 
@@ -389,6 +413,7 @@ def init_callbacks(dash_app):
                 y=prodsys,
                 title=fig_title,
                 color=color_by,
+                color_discrete_sequence=px.colors.qualitative.Dark24,
             )
         
         fig.update_layout(
