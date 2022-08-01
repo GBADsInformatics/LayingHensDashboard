@@ -327,6 +327,7 @@ def init_callbacks(dash_app):
 
         elif gtype == 'Pie Chart Comparison':
             labels = LH_prodsys
+            colours = ['#E84C3D','#F1C40F','#2DCC70','#3598DB','#2A80B9','#9B58B5']
 
             # Create subplots, using 'domain' type for pie charts
             specs = [[{'type':'domain'}, {'type':'domain'}], [{'type':'domain'}, {'type':'domain'}]]
@@ -345,7 +346,7 @@ def init_callbacks(dash_app):
             # Define pie charts
             df = filterdf(country[0],'Country',LH_df)
             df = filterdf(year[0],'Year',df)
-            chart = go.Pie(title=country[0]+' - '+str(year[0]),labels=labels, values=df.values.tolist()[0][2:-1])
+            chart = go.Pie(title=country[0]+' - '+str(year[0]),labels=labels,marker=dict(colors=colours), values=df.values.tolist()[0][2:-1])
             if np.count_nonzero(~np.isnan(chart.values)) != 0:
                 fig.add_trace(chart, 1, 1)
             else:
@@ -353,7 +354,7 @@ def init_callbacks(dash_app):
 
             df = filterdf(country[1],'Country',LH_df)
             df = filterdf(year[0],'Year',df)
-            chart = go.Pie(title=country[1]+' - '+str(year[0]),labels=labels, values=df.values.tolist()[0][2:-1])
+            chart = go.Pie(title=country[1]+' - '+str(year[0]),labels=labels,marker=dict(colors=colours), values=df.values.tolist()[0][2:-1])
             if np.count_nonzero(~np.isnan(chart.values)) != 0:
                 fig.add_trace(chart, 1, 2)
             else:
@@ -361,7 +362,7 @@ def init_callbacks(dash_app):
 
             df = filterdf(country[0],'Country',LH_df)
             df = filterdf(year[1],'Year',df)
-            chart = go.Pie(title=country[0]+' - '+str(year[1]),labels=labels, values=df.values.tolist()[0][2:-1])
+            chart = go.Pie(title=country[0]+' - '+str(year[1]),labels=labels,marker=dict(colors=colours), values=df.values.tolist()[0][2:-1])
             if np.count_nonzero(~np.isnan(chart.values)) != 0:
                 fig.add_trace(chart, 2, 1)
             else:
@@ -369,7 +370,7 @@ def init_callbacks(dash_app):
 
             df = filterdf(country[1],'Country',LH_df)
             df = filterdf(year[1],'Year',df)
-            chart = go.Pie(title=country[1]+' - '+str(year[1]),labels=labels, values=df.values.tolist()[0][2:-1])
+            chart = go.Pie(title=country[1]+' - '+str(year[1]),labels=labels,marker=dict(colors=colours), values=df.values.tolist()[0][2:-1])
             if np.count_nonzero(~np.isnan(chart.values)) != 0:
                 fig.add_trace(chart, 2, 2)
             else:
@@ -478,11 +479,12 @@ def init_callbacks(dash_app):
             if (country is None or (isinstance(country, list) and (len(country) > 1 or len(country) == 0))) and (prodsys is None or (isinstance(prodsys, list) and (len(prodsys) > 1 or len(prodsys) == 0))):
                 amsg = ['Please choose 1 production system when graphing multiple countries.','danger']
         elif gtype == 'Pie Chart Comparison':
-            if country is None or (isinstance(country, list) and len(country) < 2):
+            if country is None or isinstance(country, str) or (isinstance(country, list) and len(country) < 2):
                 amsg = ['You must select 2 countries when comparing pie charts.','danger']
-            elif country is None or (isinstance(country, list) and len(country) > 2):
+            elif (isinstance(country, list) and len(country) > 2):
                 amsg = ['Only the first 2 countries selected will be used for the pie charts.','warning']
 
+        print(amsg)
 
         if amsg is None: 
             return None

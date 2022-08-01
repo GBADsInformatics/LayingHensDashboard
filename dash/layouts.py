@@ -58,7 +58,7 @@ page_1 = html.Div([
                         html.Div(
                             className='tab-section',
                             children=[
-                                "Summary section"
+                                html.P('This section highlights the percentage of laying hens kept for egg production by production system.',style={'margin-bottom':'0'})
                             ]
                         ),
                         html.Div(
@@ -130,12 +130,6 @@ page_1 = html.Div([
                     className='cattabs', 
                     selected_style=selectedTabStyle,
                     children=[
-                        html.Div(
-                            className='tab-section',
-                            children=[
-                                "Summary section"
-                            ]
-                        ),
                         html.Div(
                             className='tab-section-flex-container',
                             children=[
