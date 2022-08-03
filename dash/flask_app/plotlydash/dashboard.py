@@ -39,6 +39,23 @@ LH_graph_types = ['Line Chart','Pie Chart Comparison', 'Stacked Bar Chart']
 # Changing to percentage/100
 LH_df[LH_prodsys] *= 100
 
+
+METASET = 'datasets/metadata/'
+AWS_BUCKET = 'https://gbads-metadata.s3.ca-central-1.amazonaws.com/'
+METADATA_SOURCES = {
+    'LAYING HENS':{
+        'METADATA': METASET+'20220802_LAYING_HENS.csv',
+        'DOWNLOAD': METASET+'20220802_LAYING_HENS.json',
+        'PROVENANCE': METASET+'LAYING_HENS_PROVENANCE.txt',
+    },
+}
+METADATA_OTHER = {
+    'GLOSSARY':{
+        'CSV': METASET+'MetadataGlossary.csv',
+    },
+}
+
+
 def filterdf(code, column, df):
     if code is None:
         return df
@@ -463,7 +480,7 @@ def init_callbacks(dash_app):
         return datatable
 
 
-    # Updating Datatable
+    # Updating Alert
     @dash_app.callback(
         Output('alert-container','children'),
         Input('options-graph-type', 'value'),
@@ -484,9 +501,70 @@ def init_callbacks(dash_app):
             elif (isinstance(country, list) and len(country) > 2):
                 amsg = ['Only the first 2 countries selected will be used for the pie charts.','warning']
 
-        print(amsg)
-
         if amsg is None: 
             return None
         else:
             return dbc.Alert([html.H5('Warning'),amsg[0]], color=amsg[1])
+    
+    
+    ### Updating METADATA ###
+    @dash_app.callback(
+        Output('metadata-container','children'),
+        Output('download-container','children'),
+        Output('meta-type','data'),
+        Input('meta-gbads-button','n_clicks'),
+        Input('provenance-button','n_clicks'),
+        Input('glossary-button','n_clicks'),
+        Input('meta-source-dropdown','value'),
+        State('meta-type','data'),
+    )
+    def update_meta(MetaButton,ProvButton,GlossButton,MetaValue,MetaType):        
+        # Filtering data with the menu values
+        pressed = callback_context.triggered[0]['prop_id'].split('.')[0]
+        df = ''
+        downloadButton = ''
+        meta=MetaType
+
+        if (pressed == 'meta-source-dropdown' and MetaType == 'meta') or pressed == 'meta-gbads-button' or pressed == '':
+            meta = 'meta'
+            df = pd.read_csv(METADATA_SOURCES[MetaValue]['METADATA'], names=['Col1', 'Col2'])
+            # req = requests.get(METADATA_SOURCES[MetaValue]['DOWNLOAD'])
+            # json_data = json.dumps(req.json(), indent=2, ensure_ascii=False).replace('#', '%23')
+            # downloadButton = html.A(
+            #     href=f"data:text/json;charset=utf-8,{json_data}",
+            #     children='Download Metadata',download=METADATA_SOURCES[MetaValue]['DOWNLOAD'].split('/')[-1],id='meta-download-button',className='download-button'
+            # )
+        elif (pressed == 'meta-source-dropdown' and MetaType == 'pro') or pressed == 'provenance-button':
+            meta = 'pro'
+            with open(METADATA_SOURCES[MetaValue]['PROVENANCE']) as file:
+                df = dcc.Markdown(file.readlines())
+            return df,downloadButton,meta
+        elif pressed == 'glossary-button':
+            df = pd.read_csv(METADATA_OTHER['GLOSSARY']['CSV'], names=['Col1', 'Col2'])
+
+        datatable = dash_table.DataTable(
+            data=df.to_dict('records'),
+            # Removing header
+            css=[{'selector': 'tr:first-child','rule': 'display: none'}],
+            # Adding hyperlinks
+            columns=[
+                {'name': 'Col1', 'id': 'Col1'},
+                {'name': 'Col2', 'id': 'Col2', 'presentation': 'markdown'}
+            ],
+            # Styling
+            style_cell={'textAlign': 'left'},
+            style_data={
+                'whiteSpace': 'normal',
+                'height': 'auto',
+            },
+            style_data_conditional=[
+                {
+                    'if': {
+                        'column_id': 'Col1',
+                    },
+                    'fontWeight': 'bold'
+                }
+            ],
+            cell_selectable=True,
+        )
+        return datatable,downloadButton,meta

@@ -195,6 +195,86 @@ page_1 = html.Div([
                         ),
                     ],  
                 ),
+                dcc.Tab(
+                    label='Metadata', 
+                    className='cattabs', 
+                    selected_style=selectedTabStyle,
+                    children=[
+                        html.Div([
+                            html.P(
+                                'GBADs Informatics metadata provides information about data presented in the \'Data and Graphs\' tab. Metadata is provided for data that is used as inputs to the model used to produce data outputs. Metadata is provided for output data including provenance information and methodology for the model.',
+                                style={'color':'#000','margin':'0'}
+                            )
+                        ],className='tab-section'),
+                        html.Div(
+                            className='tab-section-flex-container',
+                            children=[
+                                html.Div(
+                                    className='meta-section-left tab-section',
+                                    id='meta-left',
+                                    children=[
+                                        html.H5(children="Data Source",style={"text-align":"center"}), 
+                                        html.Div(
+                                            className='meta-gbads-source',
+                                            id='gbads-source',
+                                            children=[
+                                                dcc.Dropdown(
+                                                    className="meta-source-button meta-source-dropdown",
+                                                    id="meta-source-dropdown",
+                                                    value='LAYING HENS',
+                                                    options=['LAYING HENS'],
+                                                    clearable=False,
+                                                    style={"color": "black"},
+                                                ),
+                                                html.P(
+                                                    'GBADs Metadata',
+                                                    className='meta-source-button meta-gbads-button',
+                                                    id='meta-gbads-button'
+                                                ),
+                                                html.P(
+                                                    'Provenance',
+                                                    className='meta-source-button provenance-button',
+                                                    id='provenance-button',
+                                                ),
+                                            ]
+                                        ),
+                                        html.Div(
+                                            className='meta-source-button',
+                                            id='glossary-button',
+                                            children=[
+                                                'Metadata Glossary'
+                                            ]
+                                        ),
+                                    ]
+                                ),
+                                html.Div([
+                                    html.Div(
+                                        children=[
+                                            html.H5(children='Metadata',style={"text-align":"center",'height':'2rem'}), 
+                                            html.Div(
+                                                children=[],
+                                                id='download-container',
+                                                className='download-container',
+                                            ),
+                                        ],
+                                        style={'position':'relative'}
+                                    ),
+                                    html.Div(
+                                        dcc.Loading(
+                                            # parent_className='loading-wrapper',
+                                            id='metadata-container',
+                                            type='cube',
+                                            children=[
+                                                'Metadata shows here'
+                                            ],
+                                        ),
+                                        className='meta-data-container',
+                                    ),
+                                ],className='meta-section-right tab-section'),
+                            ]
+                        ),
+                    ],  
+                ),
             ]),
         ], className="tab-panel"),
         html.Div(id='dummy_div',style={'display':'none'}),
@@ -202,5 +282,6 @@ page_1 = html.Div([
 
     # Storing data in the session. Data gets deleted once tab is closed
     dcc.Store(id='stored-options', storage_type='memory', data=None),
+    dcc.Store(id='meta-type', storage_type='memory', data='meta'),
 
 ], className="main-div")

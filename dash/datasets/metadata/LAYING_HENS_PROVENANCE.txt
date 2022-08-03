@@ -1,0 +1,5 @@
+# Data Provenance Information
+
+GBADs collects data from sources such as FAOSTAT, EuroStat, WOAH, and National Statistics Agencies. The data is audited for quality control and reformatted. Changes are made to the data to standardize units (such as number of heads) and country names. All information about changes made to the data are available via data provenance files for each dataset, from each data source. Data provenance files (datasheets) are available in PDF format and are stored in Amazon S3 buckets. 
+
+Data provenance information for Laying Hens are available here <insert link to data sheet based on user selected data source>. 

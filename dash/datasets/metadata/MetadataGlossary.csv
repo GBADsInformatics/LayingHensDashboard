@@ -1,0 +1,16 @@
+Metadata Term,URI,Description
+About,https://schema.org/about,The subject matter of the content.
+Name,https://schema.org/name,The name of the item.
+Identifier,https://schema.org/identifier,"The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. "
+Publication Date,https://schema.org/datePublished,Date of first broadcast/publication.
+Creator,https://schema.org/creator,The creator/author of this CreativeWork.
+Contact Point,https://schema.org/ContactPoint,A contact point [for the resource].
+Description,https://schema.org/description,A description of the item.
+Periodocity,https://www.dublincore.org/specifications/dublin-core/dcmi-terms/terms/accrualPeriodicity/,The frequency with which items are added to a collection.
+License,https://schema.org/license,"A license document that applies to this content, typically indicated by URL."
+Language,https://schema.org/inLanguage,The language of the content or performance or used in an action
+Date Modified,https://schema.org/dateModified,The date on which the CreativeWork was most recently modified or when the item's entry was modified within a DataFeed.
+Species,<need GBADs URI> ,Livestock species that are reported in the content. 
+Subject,<need GBADs URI> ,Subject matter to which the content pertains.
+Temporal Coverage,https://schema.org/temporalCoverage,"The temporalCoverage of a CreativeWork indicates the period that the content applies to, i.e. that it describes, either as a DateTime or as a textual string indicating a time period in ISO 8601 time interval format. "
+Spatial Coverage,https://schema.org/spatialCoverage,The spatialCoverage of a CreativeWork indicates the place(s) which are the focus of the content.
