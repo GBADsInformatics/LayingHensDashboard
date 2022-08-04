@@ -126,7 +126,7 @@ page_1 = html.Div([
                     ],  
                 ),
                 dcc.Tab(
-                    label='Data table', 
+                    label='Data Table', 
                     className='cattabs', 
                     selected_style=selectedTabStyle,
                     children=[
@@ -202,75 +202,80 @@ page_1 = html.Div([
                     children=[
                         html.Div([
                             html.P(
-                                'GBADs Informatics metadata provides information about data presented in the \'Data and Graphs\' tab. Metadata is provided for data that is used as inputs to the model used to produce data outputs. Metadata is provided for output data including provenance information and methodology for the model.',
+                                'GBADs Informatics metadata provides information about data presented in the \'Graphs\' and \'Data Table\' tabs. Metadata is provided for data that is used as inputs to the model used to produce data outputs. Metadata is provided for output data including provenance information and methodology for the model.',
                                 style={'color':'#000','margin':'0'}
                             )
                         ],className='tab-section'),
                         html.Div(
-                            className='tab-section-flex-container',
+                            className='meta-section-wrapper',
                             children=[
                                 html.Div(
-                                    className='meta-section-left tab-section',
-                                    id='meta-left',
+                                    className='tab-section-flex-container meta-section',
                                     children=[
-                                        html.H5(children="Data Source",style={"text-align":"center"}), 
                                         html.Div(
-                                            className='meta-gbads-source',
-                                            id='gbads-source',
+                                            className='meta-section-left tab-section',
+                                            id='meta-left',
                                             children=[
-                                                dcc.Dropdown(
-                                                    className="meta-source-button meta-source-dropdown",
-                                                    id="meta-source-dropdown",
-                                                    value='LAYING HENS',
-                                                    options=['LAYING HENS'],
-                                                    clearable=False,
-                                                    style={"color": "black"},
+                                                html.H5(children="Data Source",style={"text-align":"center"}), 
+                                                html.Div(
+                                                    className='meta-gbads-source',
+                                                    id='gbads-source',
+                                                    children=[
+                                                        dcc.Dropdown(
+                                                            className="meta-source-button meta-source-dropdown",
+                                                            id="meta-source-dropdown",
+                                                            value='LAYING HENS',
+                                                            options=['LAYING HENS'],
+                                                            clearable=False,
+                                                            style={"color": "black"},
+                                                        ),
+                                                        html.P(
+                                                            'GBADs Metadata',
+                                                            className='meta-source-button meta-gbads-button',
+                                                            id='meta-gbads-button'
+                                                        ),
+                                                        html.P(
+                                                            'Provenance',
+                                                            className='meta-source-button provenance-button',
+                                                            id='provenance-button',
+                                                        ),
+                                                    ]
                                                 ),
-                                                html.P(
-                                                    'GBADs Metadata',
-                                                    className='meta-source-button meta-gbads-button',
-                                                    id='meta-gbads-button'
-                                                ),
-                                                html.P(
-                                                    'Provenance',
-                                                    className='meta-source-button provenance-button',
-                                                    id='provenance-button',
+                                                html.Div(
+                                                    className='meta-source-button',
+                                                    id='glossary-button',
+                                                    children=[
+                                                        'Metadata Glossary'
+                                                    ]
                                                 ),
                                             ]
                                         ),
-                                        html.Div(
-                                            className='meta-source-button',
-                                            id='glossary-button',
-                                            children=[
-                                                'Metadata Glossary'
-                                            ]
-                                        ),
+                                        html.Div([
+                                            html.Div(
+                                                children=[
+                                                    html.H5(children='Metadata',style={"text-align":"center",'height':'2rem'}), 
+                                                    html.Div(
+                                                        children=[],
+                                                        id='download-container',
+                                                        className='download-container',
+                                                    ),
+                                                ],
+                                                style={'position':'relative'}
+                                            ),
+                                            html.Div(
+                                                dcc.Loading(
+                                                    # parent_className='loading-wrapper',
+                                                    id='metadata-container',
+                                                    type='cube',
+                                                    children=[
+                                                        'Metadata shows here'
+                                                    ],
+                                                ),
+                                                className='meta-data-container',
+                                            ),
+                                        ],className='meta-section-right tab-section'),
                                     ]
                                 ),
-                                html.Div([
-                                    html.Div(
-                                        children=[
-                                            html.H5(children='Metadata',style={"text-align":"center",'height':'2rem'}), 
-                                            html.Div(
-                                                children=[],
-                                                id='download-container',
-                                                className='download-container',
-                                            ),
-                                        ],
-                                        style={'position':'relative'}
-                                    ),
-                                    html.Div(
-                                        dcc.Loading(
-                                            # parent_className='loading-wrapper',
-                                            id='metadata-container',
-                                            type='cube',
-                                            children=[
-                                                'Metadata shows here'
-                                            ],
-                                        ),
-                                        className='meta-data-container',
-                                    ),
-                                ],className='meta-section-right tab-section'),
                             ]
                         ),
                     ],  

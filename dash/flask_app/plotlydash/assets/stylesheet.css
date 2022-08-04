@@ -14,6 +14,32 @@ html,body{
     height: 100%;
 }
 
+.tab-section-container-div{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+}
+.tab-section{
+    display: block;
+    background: #ececec;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    color: black;
+}
+.meta-section-wrapper{
+    position: relative;
+    flex: 1;
+}
+.meta-section{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+}
 .meta-section-left{
     flex: 2;
     margin-right: 1rem;
@@ -127,23 +153,6 @@ html,body{
 .svg-container{
     height: 100% !important;
 } */
-.tab-section-container-div{
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-}
-.tab-section{
-    display: block;
-    background: #ececec;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-    color: black;
-}
 
 /* HEADER */
 .header-section{
