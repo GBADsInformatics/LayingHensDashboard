@@ -1,0 +1,58 @@
+{
+  "@context": "http://schema.org",
+  "@type": "Dataset",
+  "@id": "",
+  "identifier": "http://gbadske.org:9000/dataportal/",
+  "name": "European Commission - Percentage of laying hens by farming system",
+  "about:": "The Global Burden of Animal Disease Informatics Metadata provides relevant information about the collected data. All metadata presented here pertains to the data after it was collected by GBADs. This page provides a summary of metadata in a user-friendly format. To download the full metadata for this dataset, select the \"download as json-ld\" button at the top of this page. Information about terms used or to access the European Commission metadata for this dataset, please use this link: [EU Implementing Regulation 2017/1185](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32017R1185).",
+  "creator": [
+    {
+      "@type": "Organization",
+      "name": "The European Commission Agriculture and Rural Development"
+    }
+  ],
+  "contactPoint": [
+    {
+      "@type": "Organization",
+      "name": "The Global Burden of Animal Diseases Informatics",
+      "email": "metadata@gbadske.org"
+    }
+  ],
+  "dcmi:periodocity": "Annual",
+  "datePublished": "2022-06-30",
+  "description": "Laying hens populations' percentage by farming system for all European Commission's Member States from 2011 to 2021. The data was collected by navigating the [European commission's Agriculture and rural development website](https://agriculture.ec.europa.eu/index_en). The “Farming” tab was selected followed by “Animal products” and “Eggs” tabs. Percentages of laying hens were found in the same data set reporting the total number of laying hens in production on 31 December of the reference year. The data is provided according to notifications under [Commission Implementing Regulation (EU) 2017/1185, Art. 12(b) - Annex III. 10](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32017R1185).",
+  "spatialCoverage": "Data are reported for European Commission Member states. Country profiles can be checked here: https://european-union.europa.eu/principles-countries-history/country-profiles_en",
+  "temporalCoverage": "2011/2021",
+  "keywords": [
+    "Laying Hens",
+    "Production System",
+    "Population Percentage"
+  ],
+  "species": "Laying hens producing eggs for consumption are domestic fowls of the domestic species Gallus gallus L., which have reached laying maturity and are kept for the production of eggs for human consumption.",
+  "citation": [
+    {
+      "text": "European Commission Agriculture and rural development. European Commission, 2022.",
+      "@id": " https://agriculture.ec.europa.eu/farming/animal-products/eggs_en#marketmonitoring",
+      "identifier": " https://agriculture.ec.europa.eu/farming/animal-products/eggs_en#marketmonitoring"
+    }
+  ],
+  "license": {
+    "text": "European Commission Reuse and Copyright Notice",
+    "url": "https://ec.europa.eu/info/legal-notice_en#copyright-notice"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "The European Commission Agriculture and Rural Development"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "The European Commission Agriculture and Rural Development"
+  },
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "fileFormat": "csv",
+      "contentUrl": "Data can be downloaded via the GBADs API. For more information about specific API calls please visit http://gbadske.org:9000/dataportal/"
+    }
+  ]
+}
