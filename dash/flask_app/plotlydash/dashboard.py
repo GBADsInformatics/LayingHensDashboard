@@ -44,8 +44,8 @@ METASET = 'datasets/metadata/'
 AWS_BUCKET = 'https://gbads-metadata.s3.ca-central-1.amazonaws.com/'
 METADATA_SOURCES = {
     'LAYING HENS':{
-        'METADATA': METASET+'20220802_LAYING_HENS.csv',
-        'DOWNLOAD': METASET+'20220802_LAYING_HENS.json',
+        'METADATA': METASET+'20220630_LAYING_HENS.csv',
+        'DOWNLOAD': METASET+'20220630_LAYING_HENS.json',
         'PROVENANCE': METASET+'LAYING_HENS_PROVENANCE.txt',
     },
 }
