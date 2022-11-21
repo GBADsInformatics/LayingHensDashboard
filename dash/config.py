@@ -4,6 +4,9 @@ from os import environ, path
 from dotenv import load_dotenv
 
 BASE_DIR = path.abspath(path.dirname(__file__))
+if path.exists("/.dockerenv"):
+    # If we are running in a container, overwrite normal location
+    BASE_DIR="/app"
 load_dotenv(path.join(BASE_DIR, ".env"))
 
 
