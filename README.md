@@ -5,8 +5,8 @@ This dashboard was created ontop of the [GBADS Dashboard Template](https://githu
 
 ## Running in Docker
 1. `docker run -d -p 80:8051 -v /local/path/to/.env:/app/.env gbadsinformatics/layinghens-dash` \
-  This exposes the dashboard on port `80` of your machine, you can change this number to any port you desire.
-  Do not change `8051` in the port argument.
+  This exposes the dashboard on port `80` of your machine, you can change this number to any port you desire. \
+  Do not change `8051` in the port argument. \
   Change `/local/path/to/.env` to the full path of the .env you're using.
 
 ## Installation
