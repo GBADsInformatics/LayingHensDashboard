@@ -16,5 +16,5 @@ ENV AUTH0_REDIRECT=/dash
 ENV DEBUG=FALSE
 
 # Specifying the dashboard command
-CMD ["waitress-serve","--port=8051","--call","wsgi:returnApp"]
+CMD ["waitress-serve","--port=80","--call","wsgi:returnApp"]
 
