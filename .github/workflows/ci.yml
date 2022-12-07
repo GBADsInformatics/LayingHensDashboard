@@ -32,4 +32,4 @@ jobs:
           push: true
           context: ./dash
           file: ./dash/Dockerfile
-          tags: gbadsinformatics/layinghens-dash:test
+          tags: gbadsinformatics/layinghens-dash:latest
