@@ -14,26 +14,26 @@ from flask import url_for
 from authlib.integrations.flask_client import OAuth
 from six.moves.urllib.parse import urlencode
 
-AUTH0_CLIENT_ID = 'AUTH0_CLIENT_ID'
-AUTH0_CLIENT_SECRET = 'AUTH0_CLIENT_SECRET'
+# AUTH0_CLIENT_ID = 'AUTH0_CLIENT_ID'
+# AUTH0_CLIENT_SECRET = 'AUTH0_CLIENT_SECRET'
 AUTH0_CALLBACK_URL = 'AUTH0_CALLBACK_URL'
-AUTH0_DOMAIN = 'AUTH0_DOMAIN'
-AUTH0_AUDIENCE = 'AUTH0_AUDIENCE'
-PROFILE_KEY = 'profile'
-SECRET_KEY = 'ThisIsTheSecretKey'
-JWT_PAYLOAD = 'jwt_payload'
+# AUTH0_DOMAIN = 'AUTH0_DOMAIN'
+# AUTH0_AUDIENCE = 'AUTH0_AUDIENCE'
+# PROFILE_KEY = 'profile'
+# SECRET_KEY = 'ThisIsTheSecretKey'
+# JWT_PAYLOAD = 'jwt_payload'
 AUTH0_REDIRECT = 'AUTH0_REDIRECT'
 
-AUTH0_CALLBACK_URL = env.get(AUTH0_CALLBACK_URL)
-AUTH0_CLIENT_ID = env.get(AUTH0_CLIENT_ID)
-AUTH0_CLIENT_SECRET = env.get(AUTH0_CLIENT_SECRET)
-AUTH0_DOMAIN = env.get(AUTH0_DOMAIN)
-AUTH0_BASE_URL = 'https://' + AUTH0_DOMAIN
-AUTH0_AUDIENCE = env.get(AUTH0_AUDIENCE)
-AUTH0_REDIRECT = env.get(AUTH0_REDIRECT)
+AUTH0_CALLBACK_URL = env.get(AUTH0_CALLBACK_URL,"/dashboards/layinghens/callback")
+# AUTH0_CLIENT_ID = env.get(AUTH0_CLIENT_ID)
+# AUTH0_CLIENT_SECRET = env.get(AUTH0_CLIENT_SECRET)
+# AUTH0_DOMAIN = env.get(AUTH0_DOMAIN)
+# AUTH0_BASE_URL = 'https://' + AUTH0_DOMAIN
+# AUTH0_AUDIENCE = env.get(AUTH0_AUDIENCE)
+AUTH0_REDIRECT = env.get(AUTH0_REDIRECT,"/dashboards/layinghens/")
 
-app.secret_key = SECRET_KEY
-app.debug = True
+# app.secret_key = SECRET_KEY
+app.debug = env.get('DEBUG','false').lower() in ('true', '1', 't')
 
 # @app.route('/')
 # def home():
@@ -46,34 +46,34 @@ app.debug = True
 #         body="This is a homepage served with Flask."
 #     )
 
-@app.errorhandler(Exception)
-def handle_auth_error(ex):
-    response = jsonify(message=str(ex))
-    response.status_code = (ex.code if isinstance(ex, HTTPException) else 500)
-    return response
+# @app.errorhandler(Exception)
+# def handle_auth_error(ex):
+#     response = jsonify(message=str(ex))
+#     response.status_code = (ex.code if isinstance(ex, HTTPException) else 500)
+#     return response
 
 
-oauth = OAuth(app)
+# oauth = OAuth(app)
 
-auth0 = oauth.register(
-    'auth0',
-    client_id=AUTH0_CLIENT_ID,
-    client_secret=AUTH0_CLIENT_SECRET,
-    api_base_url=AUTH0_BASE_URL,
-    access_token_url=AUTH0_BASE_URL + '/oauth/token',
-    authorize_url=AUTH0_BASE_URL + '/authorize',
-    client_kwargs={
-        'scope': 'openid profile email',
-    },
-)
+# auth0 = oauth.register(
+#     'auth0',
+#     client_id=AUTH0_CLIENT_ID,
+#     client_secret=AUTH0_CLIENT_SECRET,
+#     api_base_url=AUTH0_BASE_URL,
+#     access_token_url=AUTH0_BASE_URL + '/oauth/token',
+#     authorize_url=AUTH0_BASE_URL + '/authorize',
+#     client_kwargs={
+#         'scope': 'openid profile email',
+#     },
+# )
 
-def requires_auth(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if PROFILE_KEY not in session:
-            return redirect('/login')
-        return f(*args, **kwargs)
-    return decorated
+# def requires_auth(f):
+#     @wraps(f)
+#     def decorated(*args, **kwargs):
+#         if PROFILE_KEY not in session:
+#             return redirect('/login')
+#         return f(*args, **kwargs)
+#     return decorated
 
 
 # Controllers API
@@ -82,36 +82,36 @@ def home():
     return redirect(AUTH0_REDIRECT)
 
 
-@app.route('/callback')
-def callback_handling():
-    auth0.authorize_access_token()
-    resp = auth0.get('userinfo')
-    userinfo = resp.json()
+# @app.route('/callback')
+# def callback_handling():
+#     auth0.authorize_access_token()
+#     resp = auth0.get('userinfo')
+#     userinfo = resp.json()
 
-    session[JWT_PAYLOAD] = userinfo
-    session[PROFILE_KEY] = {
-        'user_id': userinfo['sub'],
-        'name': userinfo['name'],
-        'picture': userinfo['picture']
-    }
-    return redirect(AUTH0_REDIRECT)
-
-
-@app.route('/login')
-def login():
-    return auth0.authorize_redirect(redirect_uri=AUTH0_CALLBACK_URL, audience=AUTH0_AUDIENCE)
+#     session[JWT_PAYLOAD] = userinfo
+#     session[PROFILE_KEY] = {
+#         'user_id': userinfo['sub'],
+#         'name': userinfo['name'],
+#         'picture': userinfo['picture']
+#     }
+#     return redirect(AUTH0_REDIRECT)
 
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    params = {'returnTo': url_for('home', _external=True), 'client_id': AUTH0_CLIENT_ID}
-    return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
+# @app.route('/login')
+# def login():
+#     return auth0.authorize_redirect(redirect_uri=AUTH0_CALLBACK_URL, audience=AUTH0_AUDIENCE)
 
 
-@app.route('/dashboard')
-@requires_auth
-def dashboard():
-    return render_template('dashboard.html',
-    userinfo=session[PROFILE_KEY],
-    userinfo_pretty=json.dumps(session[JWT_PAYLOAD], indent=4))
+# @app.route('/logout')
+# def logout():
+#     session.clear()
+#     params = {'returnTo': url_for('home', _external=True), 'client_id': AUTH0_CLIENT_ID}
+#     return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
+
+
+# @app.route('/dashboard')
+# @requires_auth
+# def dashboard():
+#     return render_template('dashboard.html',
+#     userinfo=session[PROFILE_KEY],
+#     userinfo_pretty=json.dumps(session[JWT_PAYLOAD], indent=4))

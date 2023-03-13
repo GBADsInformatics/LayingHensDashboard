@@ -27,6 +27,10 @@ from dash.dependencies import Input, Output, State
 import json
 from textwrap import dedent
 
+# dash base url
+DASH_BASE_URL = '/dashboards/layinghens/'
+
+
 # Importing dataset
 LH_df = pd.read_csv('datasets/laying_hens.csv')
 
@@ -76,15 +80,15 @@ stylesheet = [
     'https://codepen.io/chriddyp/pen/bWLwgP.css'
 ]
 
-PROFILE_KEY = 'profile'
-JWT_PAYLOAD = 'jwt_payload'
+# PROFILE_KEY = 'profile'
+# JWT_PAYLOAD = 'jwt_payload'
 
 def init_dashboard(server):
             
     dash_app = dash.Dash(__name__,
         server=server,
-        title='Laying Hens Dashboard',
-        routes_pathname_prefix="/dash/",
+        title='GBADs Laying Hens Dashboard',
+        routes_pathname_prefix=DASH_BASE_URL,
         external_stylesheets=[
             # 'https://codepen.io/chriddyp/pen/bWLwgP.css',
             dbc.themes.BOOTSTRAP,
@@ -98,87 +102,87 @@ def init_dashboard(server):
     init_callbacks(dash_app)
     return dash_app.server
 
-isLoggedIn = False
-def requires_auth(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        global isLoggedIn
-        if PROFILE_KEY not in session:
-            isLoggedIn = False
-            return redirect('/login')
-        isLoggedIn = True
-        return f(*args, **kwargs)
-    return decorated
+# isLoggedIn = False
+# def requires_auth(f):
+#     @wraps(f)
+#     def decorated(*args, **kwargs):
+#         global isLoggedIn
+#         if PROFILE_KEY not in session:
+#             isLoggedIn = False
+#             return redirect('/login')
+#         isLoggedIn = True
+#         return f(*args, **kwargs)
+#     return decorated
 
-def checkRole():
-    isRole = False
-    y = json.dumps(session[JWT_PAYLOAD])
-    person_dict = json.loads(y)
-    p = (person_dict["http://gbad.org/roles"]) # This link sends you to the Ground Based Air Defense website lmao
-    stringver = json.dumps(p)
-    print(stringver)
-    if 'Verified User' in stringver:
-        isRole = True
-    else:
-        isRole = False
-    return isRole
+# def checkRole():
+#     isRole = False
+#     y = json.dumps(session[JWT_PAYLOAD])
+#     person_dict = json.loads(y)
+#     p = (person_dict["http://gbad.org/roles"]) # This link sends you to the Ground Based Air Defense website lmao
+#     stringver = json.dumps(p)
+#     print(stringver)
+#     if 'Verified User' in stringver:
+#         isRole = True
+#     else:
+#         isRole = False
+#     return isRole
 
-def getJWT(personDict,userCat):
-    p = (personDict[userCat])
-    stringVer = json.dumps(p)
-    s1 = stringVer.replace("[]","")
-    strippedString = s1.strip('"')
-    return strippedString
+# def getJWT(personDict,userCat):
+#     p = (personDict[userCat])
+#     stringVer = json.dumps(p)
+#     s1 = stringVer.replace("[]","")
+#     strippedString = s1.strip('"')
+#     return strippedString
 
-@requires_auth
-def getUserContent():
-    y = json.dumps(session[JWT_PAYLOAD])
-    personDict = json.loads(y)
-    userEmail = getJWT(personDict,"email")
-    print(userEmail)
-    return userEmail
+# @requires_auth
+# def getUserContent():
+#     y = json.dumps(session[JWT_PAYLOAD])
+#     personDict = json.loads(y)
+#     userEmail = getJWT(personDict,"email")
+#     print(userEmail)
+#     return userEmail
 
 
 ##CALLBACKS -------------------------------------------------------------------------------------------------------------------------------------------------------------
 def init_callbacks(dash_app):
     
     # Callbacks to handle login components
-    @dash_app.callback(
-        Output(component_id='login-button', component_property='style'),
-        Input('url', 'pathname')
-    )
-    @requires_auth
-    def login_button(pathname):
-        checkRole()
-        return {'margin-left': '5px', 'display': 'none'}
+    # @dash_app.callback(
+    #     Output(component_id='login-button', component_property='style'),
+    #     Input('url', 'pathname')
+    # )
+    # @requires_auth
+    # def login_button(pathname):
+    #     checkRole()
+    #     return {'margin-left': '5px', 'display': 'none'}
     
-    @dash_app.callback(
-        Output(component_id='logout-button', component_property='style'),
-        Input('url', 'pathname')
-    )
-    @requires_auth
-    def logout_button(pathname):
-        return {'margin-top': '10px', 'margin-right':'10px', 'float': 'right'}
+    # @dash_app.callback(
+    #     Output(component_id='logout-button', component_property='style'),
+    #     Input('url', 'pathname')
+    # )
+    # @requires_auth
+    # def logout_button(pathname):
+    #     return {'margin-top': '10px', 'margin-right':'10px', 'float': 'right'}
 
-    # Callback to handle feedback.
-    @dash_app.callback(
-        Output('feedback-text', 'value'),
-        Output('feedback-button', 'disabled'),
-        Output('feedback-text', 'disabled'),
-        Input("feedback-button", "n_clicks"),
-        State('feedback-text', 'value')
-    )
-    def feedback_box(n, text):
-        if (n > 0 and text != None and text != ""):
-            outF = open("feedback.txt", "a")
-            outF.writelines('["'+text+'"]\n')
-            outF.close()
-            return\
-                "Thank you for your feedback",\
-                True,\
-                True
-        else:
-            print("no")
+    # # Callback to handle feedback.
+    # @dash_app.callback(
+    #     Output('feedback-text', 'value'),
+    #     Output('feedback-button', 'disabled'),
+    #     Output('feedback-text', 'disabled'),
+    #     Input("feedback-button", "n_clicks"),
+    #     State('feedback-text', 'value')
+    # )
+    # def feedback_box(n, text):
+    #     if (n > 0 and text != None and text != ""):
+    #         outF = open("feedback.txt", "a")
+    #         outF.writelines('["'+text+'"]\n')
+    #         outF.close()
+    #         return\
+    #             "Thank you for your feedback",\
+    #             True,\
+    #             True
+    #     else:
+    #         print("no")
     
     # Callback to handle changing the page based on the pathname provided.
     @dash_app.callback(
@@ -186,7 +190,7 @@ def init_callbacks(dash_app):
         Input('url', 'pathname')
     )
     def display_page(pathname):
-        if pathname == '/dash/':
+        if pathname == DASH_BASE_URL:
             layout = page_1
         else:
             layout = "404"
