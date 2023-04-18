@@ -1,0 +1,53 @@
+name: Docker Build & ECS Deploy
+
+on:
+  push:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+env:
+  DOCKER_IMAGE: gbadsinformatics/layinghens-dash:latest
+  SERVICE_NAME: LayingHens-dash-service
+  CLUSTER_NAME: GBADs-Dashboards-Cluster
+  AWS_REGION: us-east-2
+
+jobs:
+  docker:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Build and push to Docker Hub
+        uses: docker/build-push-action@v3
+        with:
+          context: ./dash
+          file: ./dash/Dockerfile
+          push: true
+          tags: ${{ env.DOCKER_IMAGE }}
+          
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Redeploy Amazon ECS service
+        run: |
+          aws ecs update-service --cluster ${{ env.CLUSTER_NAME }} --service ${{ env.SERVICE_NAME }} --force-new-deployment
+
