@@ -1,0 +1,21 @@
+on:
+  push:
+    branches: [ "main" , "master" ]
+
+  workflow_dispatch:
+  
+jobs:
+  docker:
+    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/docker.yml@main
+    secrets: inherit
+    with:
+      IMAGE_NAME: layinghens-dash
+      CONTEXT: ./dash
+      DOCKERFILE: ./dash/Dockerfile
+
+  aws:
+    needs: docker
+    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/aws.yml@main
+    secrets: inherit
+    with:
+      SERVICE_NAME: LayingHens-dash-service
