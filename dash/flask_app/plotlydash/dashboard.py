@@ -344,6 +344,7 @@ def init_callbacks(dash_app):
                 color=color_by,
                 title=fig_title,
                 color_discrete_sequence=px.colors.qualitative.Dark24,
+                template='plotly_white',
             )
 
         elif gtype == 'Pie Chart Comparison':
@@ -480,6 +481,10 @@ def init_callbacks(dash_app):
             data=df.to_dict('records'),
             columns=cols,
             export_format="csv",
+            style_cell={
+                'textAlign':'left',
+                'font-family':'sans-serif'
+            }
         )
         return datatable
 

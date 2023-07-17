@@ -27,9 +27,14 @@ GBADSLOGOW = "https://i0.wp.com/animalhealthmetrics.org/wp-content/uploads/2019/
 # TAB STYLING
 # This is the styling that is applied to the selected tab.
 selectedTabStyle = {
-    'border': '3px solid white',
-    'backgroundColor': 'white',
-    'color': 'black'
+    'borderTop': '1px white',
+    'borderBottom': '1px white',
+    'borderLeft': '1px white',
+    'borderRight': '1px white',
+    'background-color': '#f6f6f6d1',
+    'box-shadow': '1px 1px 0px white',
+    'color': 'orange',
+    'fontWeight': 'bold'
 }
 
 # PAGE LAYOUT
@@ -37,7 +42,7 @@ selectedTabStyle = {
 # for this dashboard template.
 page_1 = html.Div([
     html.Div([
-        html.Img(src=GBADSLOGOW, className="header-logo"),
+        html.Img(src=GBADSLOGOB, className="header-logo"),
         html.Div([html.H1('Laying Hens', className="header-title")], className="header-title-div"),
         # dbc.Button("Login", id="login-button", href=env.get("AUTH0_LOGIN"), style={'margin-top': '10px', 'margin-right':'10px', 'float': 'right'}),
         # dbc.Button("Logout", id="logout-button", href=env.get("AUTH0_LOGOUT"), style={'margin-top': '10px', 'margin-right':'10px', 'float': 'right', 'display':'none'}),
