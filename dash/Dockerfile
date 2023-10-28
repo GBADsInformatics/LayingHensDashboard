@@ -12,7 +12,6 @@ RUN pip install -r requirements.txt
 COPY . /app/dash
 
 # Setting env
-ENV AUTH0_REDIRECT=/dash
 ENV DEBUG=FALSE
 
 # Specifying the dashboard command

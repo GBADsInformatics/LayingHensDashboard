@@ -14,6 +14,8 @@ from flask import url_for
 from authlib.integrations.flask_client import OAuth
 from six.moves.urllib.parse import urlencode
 
+BASE_URL = env.get('BASE_URL','')
+
 # AUTH0_CLIENT_ID = 'AUTH0_CLIENT_ID'
 # AUTH0_CLIENT_SECRET = 'AUTH0_CLIENT_SECRET'
 AUTH0_CALLBACK_URL = 'AUTH0_CALLBACK_URL'
@@ -24,13 +26,13 @@ AUTH0_CALLBACK_URL = 'AUTH0_CALLBACK_URL'
 # JWT_PAYLOAD = 'jwt_payload'
 AUTH0_REDIRECT = 'AUTH0_REDIRECT'
 
-AUTH0_CALLBACK_URL = env.get(AUTH0_CALLBACK_URL,"/dashboards/layinghens/callback")
+AUTH0_CALLBACK_URL = env.get(AUTH0_CALLBACK_URL, BASE_URL+"/")
 # AUTH0_CLIENT_ID = env.get(AUTH0_CLIENT_ID)
 # AUTH0_CLIENT_SECRET = env.get(AUTH0_CLIENT_SECRET)
 # AUTH0_DOMAIN = env.get(AUTH0_DOMAIN)
 # AUTH0_BASE_URL = 'https://' + AUTH0_DOMAIN
 # AUTH0_AUDIENCE = env.get(AUTH0_AUDIENCE)
-AUTH0_REDIRECT = env.get(AUTH0_REDIRECT,"/dashboards/layinghens/")
+AUTH0_REDIRECT = env.get(AUTH0_REDIRECT, BASE_URL+"/")
 
 # app.secret_key = SECRET_KEY
 app.debug = env.get('DEBUG','false').lower() in ('true', '1', 't')
@@ -77,9 +79,10 @@ app.debug = env.get('DEBUG','false').lower() in ('true', '1', 't')
 
 
 # Controllers API
-@app.route('/')
-def home():
-    return redirect(AUTH0_REDIRECT)
+if AUTH0_REDIRECT != '/':
+    @app.route('/')
+    def home():
+        return redirect(AUTH0_REDIRECT)
 
 
 # @app.route('/callback')

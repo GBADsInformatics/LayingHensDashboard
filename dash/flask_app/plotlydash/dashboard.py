@@ -3,6 +3,7 @@ import json
 from logging import disable
 from operator import gt
 from os.path import exists
+from os import environ as env
 import requests
 import numpy as np
 import pandas as pd
@@ -28,7 +29,7 @@ import json
 from textwrap import dedent
 
 # dash base url
-DASH_BASE_URL = '/dashboards/layinghens/'
+BASE_URL = env.get('BASE_URL','')
 
 
 # Importing dataset
@@ -88,7 +89,7 @@ def init_dashboard(server):
     dash_app = dash.Dash(__name__,
         server=server,
         title='GBADs Laying Hens Dashboard',
-        routes_pathname_prefix=DASH_BASE_URL,
+        routes_pathname_prefix=BASE_URL+'/',
         external_stylesheets=[
             # 'https://codepen.io/chriddyp/pen/bWLwgP.css',
             dbc.themes.BOOTSTRAP,
@@ -190,7 +191,7 @@ def init_callbacks(dash_app):
         Input('url', 'pathname')
     )
     def display_page(pathname):
-        if pathname == DASH_BASE_URL:
+        if pathname == BASE_URL+'/':
             layout = page_1
         else:
             layout = "404"
