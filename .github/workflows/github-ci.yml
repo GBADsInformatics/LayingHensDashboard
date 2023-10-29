@@ -18,4 +18,4 @@ jobs:
     uses: GBADsInformatics/DevopsWorkflows/.github/workflows/aws.yml@main
     secrets: inherit
     with:
-      SERVICE_NAME: LayingHens-dash-service
+      SERVICE_NAME: layinghens-dash-service
