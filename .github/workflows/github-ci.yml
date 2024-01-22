@@ -6,7 +6,7 @@ on:
   
 jobs:
   docker:
-    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/docker.yml@main
+    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/docker.yml@logs-test
     secrets: inherit
     with:
       IMAGE_NAME: layinghens-dash
@@ -15,7 +15,7 @@ jobs:
 
   aws:
     needs: docker
-    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/aws.yml@main
+    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/aws.yml@logs-test
     secrets: inherit
     with:
       SERVICE_NAME: layinghens-dash-service
