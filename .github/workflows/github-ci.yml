@@ -9,7 +9,7 @@ jobs:
     name: Commit SHA
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.commit-hash.outputs.sha7 }}
+      sha7: ${{ steps.commit-hash.outputs.sha7 }}
     steps:
       - name: Get Commit SHA
         id: commit-hash
