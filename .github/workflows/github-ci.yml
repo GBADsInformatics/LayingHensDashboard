@@ -5,8 +5,17 @@ on:
   workflow_dispatch:
   
 jobs:
+  commit-hash:
+    name: Commit SHA
+    outputs:
+      output1: ${{ steps.commit-hash.outputs.sha7 }}
+    steps:
+      - name: Get Commit SHA
+        id: commit-hash
+        run: echo "sha7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> "$GITHUB_OUTPUT"
+
   docker:
-    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/docker.yml@logs-test
+    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/docker.yml@main
     secrets: inherit
     with:
       IMAGE_NAME: layinghens-dash
@@ -14,8 +23,14 @@ jobs:
       DOCKERFILE: ./dash/Dockerfile
 
   aws:
-    needs: docker
-    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/aws.yml@logs-test
+    needs: [commit-hash, docker]
+    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/aws.yml@v2.0
     secrets: inherit
     with:
-      SERVICE_NAME: layinghens-dash-service
+      stack-name: layinghens-dash-stack
+      template-file:
+      template-inputs: >-
+        ApplicationName=layinghens-dash,
+        DockerURI=gbadsinformatics/layinghens-dash:${{ needs.commit-hash.outputs.sha7 }},
+        BaseURL=/dashboards/layinghens,
+        ListenerRulePriority=4
