@@ -35,3 +35,4 @@ jobs:
         DockerURI=gbadsinformatics/layinghens-dash:${{ needs.commit-hash.outputs.sha7 }},
         BaseURL=/dashboards/layinghens,
         ListenerRulePriority=4
+ 
