@@ -30,7 +30,6 @@ jobs:
     with:
       stack-name: layinghens-dash-stack
       template-file: .aws/deployment.yml
-      stack-update-timeout: 2
       template-inputs: >-
         ApplicationName=layinghens-dash,
         DockerURI=gbadsinformatics/layinghens-dash:${{ needs.commit-hash.outputs.sha7 }},
