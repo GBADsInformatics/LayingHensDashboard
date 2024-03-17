@@ -16,7 +16,7 @@ jobs:
         run: echo "sha7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> "$GITHUB_OUTPUT"
 
   docker:
-    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/docker.yml@main
+    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/docker.yml@v2.0
     secrets: inherit
     with:
       IMAGE_NAME: layinghens-dash
