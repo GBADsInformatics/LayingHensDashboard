@@ -26,13 +26,13 @@ jobs:
   aws:
     needs: [commit-hash, docker]
     uses: GBADsInformatics/DevopsWorkflows/.github/workflows/aws.yml@v2.0
-    secrets: inherit
-    with:
-      stack-name: layinghens-dash-stack
-      template-file: .aws/deployment.yml
-      template-inputs: >-
+    secrets:
+      template-input: >-
         ApplicationName=layinghens-dash,
         DockerURI=gbadsinformatics/layinghens-dash:${{ needs.commit-hash.outputs.sha7 }},
         BaseURL=/dashboards/layinghens,
         ListenerRulePriority=4
- 
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    with:
+      stack-name: layinghens-dash-stack
